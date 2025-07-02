@@ -21,7 +21,7 @@
 | `Item` | `IItemAccess` | `getAsItem()` |
 | `Level` | `ILevelAccess` | `getAsLevel()` |
 | `Player` | `IPlayerAccess` | `getAsPlayer()` |
-| *(注: `ItemStack` は現在非対応)* | - | - |
+| *(注: `ItemStack` は現在非対応)* | `IItemStackAccess` | - |
 
 > 現在のバージョンでは、基本的な `getAsX()` のみ提供しています。  
 > より高度なAPIは今後のバージョンで拡張予定です。
