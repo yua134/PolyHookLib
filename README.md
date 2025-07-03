@@ -20,7 +20,7 @@ by injecting shared interfaces into otherwise unrelated classes, and using `inst
 | `Item`                                         | `IItemAccess`        | `getAsItem()`        |
 | `Level`                                        | `ILevelAccess`       | `getAsLevel()`       |
 | `Player`                                       | `IPlayerAccess`      | `getAsPlayer()`      |
-| *(Note: `ItemStack` is currently unsupported)* | -                    | -                    |
+| *(Note: `ItemStack` is currently unsupported)* | `IItemStackAccess`   | -                    |
 
 > The current version only provides basic `getAsX()` methods.
 > More advanced APIs may be added in future versions.
