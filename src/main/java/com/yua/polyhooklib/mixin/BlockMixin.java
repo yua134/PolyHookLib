@@ -1,6 +1,6 @@
 package com.yua.polyhooklib.mixin;
 
-import com.yua.polyhooklib.api.IBlockAccess;
+import com.yua.polyhooklib.access.IBlockAccess;
 import net.minecraft.world.level.block.Block;
 import org.spongepowered.asm.mixin.Mixin;
 

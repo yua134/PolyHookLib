@@ -1,6 +1,6 @@
 package com.yua.polyhooklib.mixin;
 
-import com.yua.polyhooklib.api.IEntityAccess;
+import com.yua.polyhooklib.access.IEntityAccess;
 import net.minecraft.world.entity.Entity;
 import org.spongepowered.asm.mixin.Mixin;
 

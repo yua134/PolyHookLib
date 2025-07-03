@@ -1,6 +1,6 @@
 package com.yua.polyhooklib.mixin;
 
-import com.yua.polyhooklib.api.IPlayerAccess;
+import com.yua.polyhooklib.access.IPlayerAccess;
 import net.minecraft.world.entity.player.Player;
 import org.spongepowered.asm.mixin.Mixin;
 
