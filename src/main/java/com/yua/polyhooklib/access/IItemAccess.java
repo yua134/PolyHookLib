@@ -1,4 +1,4 @@
-package com.yua.polyhooklib.api;
+package com.yua.polyhooklib.access;
 
 import net.minecraft.world.item.Item;
 

@@ -2,7 +2,8 @@ package com.yua.polyhooklib;
 
 
 import com.mojang.brigadier.CommandDispatcher;
-import com.yua.polyhooklib.api.*;
+import com.yua.polyhooklib.access.*;
+import com.yua.polyhooklib.trait.*;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
