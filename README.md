@@ -24,9 +24,6 @@ by injecting shared interfaces into otherwise unrelated classes, and using `inst
 > The current version only provides basic `getAsX()` methods.
 > More advanced APIs may be added in future versions.
 
-以下が英訳です。意訳と直訳のバランスを取りつつ、英語圏の開発者にも自然に伝わる表現にしています：
-
----
 
 ## 🔧 Usage (For Developers)
 
