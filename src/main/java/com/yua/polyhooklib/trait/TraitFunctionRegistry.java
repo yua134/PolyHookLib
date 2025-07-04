@@ -15,17 +15,20 @@ public class TraitFunctionRegistry {
     private static boolean locked = false;
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public static <T, R> void register(TraitID traitId, Class<T> targetClass, TraitFunction<T, R> impl) {
+    public static <T, R> void register(String Id, Class<T> targetClass, TraitFunction<T, R> impl) {
         if (locked) {
             throw new IllegalStateException("Trait registration is locked after load complete");
         }
 
         LOGGER.info("function register worked");
 
+        TraitID traitId = TraitID.of(Id);
+
         Map<Class<?>, TraitFunction<?,?>> innerMap = registry.computeIfAbsent(traitId, k -> new HashMap<>());
 
         if (innerMap.containsKey(targetClass)) {
             LOGGER.warn("[PolyHookLib] WARNING: Duplicate registration for TraitID {} on {}", traitId, targetClass.getName());
+            return;
         }
 
         innerMap.put(targetClass, impl);

@@ -14,19 +14,20 @@ public class TraitRegistry {
     private static boolean locked = false;
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public static <T> void register(
-            TraitID traitId, Class<T> targetClass, Trait<T> impl
-    ) {
+    public static <T> void register(String Id, Class<T> targetClass, Trait<T> impl) {
         if (locked) {
             throw new IllegalStateException("Trait registration is locked after load complete");
         }
 
         LOGGER.info("trait register worked");
 
+        TraitID traitId = TraitID.of(Id);
+
         Map<Class<?>, Trait<?>> innerMap = registry.computeIfAbsent(traitId, k -> new HashMap<>());
 
         if (innerMap.containsKey(targetClass)) {
             LOGGER.warn("[PolyHookLib] WARNING: Duplicate registration for TraitID {} on {}", traitId, targetClass.getName());
+            return;
         }
 
         innerMap.put(targetClass, impl);

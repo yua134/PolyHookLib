@@ -1,6 +1,5 @@
 # PolyHookLib
 
-> 🔗 日本語版は [README.ja.md](./README.ja.md) をご覧ください  
 > 🔗 English version is [README.md](./README.md)
 
 **PolyHookLib** は、Minecraftのバニラクラスに Mixin と Interface を適用することで、  
@@ -11,38 +10,128 @@
 
 
 
-## 📦 機能概要
+## 🔧 使用方法（開発者向け）
 
-| 対象クラス | 追加インターフェース | 提供されるメソッド |
-|------------|----------------------|--------------------|
-| `Block` | `IBlockAccess` | `getAsBlock()` |
-| `BlockEntity` | `IBlockEntityAccess` | `getAsBlockEntity()` |
-| `Entity` | `IEntityAccess` | `getAsEntity()` |
-| `Item` | `IItemAccess` | `getAsItem()` |
-| `Level` | `ILevelAccess` | `getAsLevel()` |
-| `Player` | `IPlayerAccess` | `getAsPlayer()` |
-| *(注: `ItemStack` は現在非対応)* | `IItemStackAccess` | - |
+### ✅ 基本的な使い方：`IAccess` インターフェースによる型アクセス
 
-> 現在のバージョンでは、基本的な `getAsX()` のみ提供しています。  
-> より高度なAPIは今後のバージョンで拡張予定です。
+このライブラリは、バニラクラスに共通インターフェース（`IAccess` 系）を注入することで、異なる型を統一的に扱えるようにします。
 
-
-
-
-## 🔧 利用方法（開発者向け）
-
-1. `build.gradle` などに依存を追加（今後Maven等対応予定）
-2. 対象オブジェクトに対して `instanceof I〇〇Access` で判定
-3. キャスト後 `getAs〇〇()` を呼び出すことで本来の型を取得可能
-
-例：
+#### 📌 基本構文
 
 ```java
 if (object instanceof IBlockAccess access) {
-    Block b = access.getAsBlock();
-    // Block に対する操作...
+    Block block = access.getAsBlock();
+    // Block に対する処理
 }
-````
+```
+
+
+#### 🛠 安全に取得したいときは `AccessHelper` を使う（推奨）
+
+```java
+AccessHelper.tryAsPlayer(entity).ifPresent(player -> {
+    // Optional<Player> で安全に取得・利用
+});
+```
+AccessHelper は、各 IAccess の `tryAsXxx(T)` メソッドを提供するユーティリティクラスで、  
+Optional を使って null セーフな取得を行うことができます。
+
+| 対象クラス | 追加インターフェース | 提供されるメソッド      |
+|------------|----------------------|----------------|
+| `Block` | `IBlockAccess` | `getAsBlock()` |
+| `BlockEntity` | `IBlockEntityAccess` | `getAsBlockEntity()` |
+| `Entity` | `IEntityAccess` | `getAsEntity()` |
+| `Item` | `IItemAccess` | `getAsItem()`  |
+| `Level` | `ILevelAccess` | `getAsLevel()` |
+| `Player` | `IPlayerAccess` | `getAsPlayer()` |
+| *(注: `ItemStack` は現在非対応)* | `IItemStackAccess` | -              |
+
+
+---
+
+### 🧩 応用的な使い方：Trait システムによる振る舞いの追加
+
+#### 💡 概要
+
+`Trait<T>` や `TraitFunction<T, R>` を用いることで、**特定のクラスに任意の「振る舞い」や「処理」を外部から追加**し、実行時に動的に呼び出すことができます。
+`modid:trait_name` 形式の `TraitID` を使って一意に識別されます。
+
+---
+
+### 🏗 登録方法（Mod 初期化時）
+```java
+String id = "my_trait";
+Trait<MyType> func = (input) -> {
+    //任意の処理
+};
+
+TraitRegistry.register(id, MyType.class, func);
+```
+
+```java
+String id = "my_trait"; 
+TraitFunction<MyType, MyResult> func = (input) -> {
+    // 任意の処理
+    return ...; //戻り値あり
+};
+
+TraitFunctionRegistry.register(id, MyType.class, func);
+```
+
+
+* IDは任意の文字列が使用できます。TraitとTraitFunctionにはそれぞれ同IDで登録できますが、Trait,TraitFunction内では同じIDで登録できません（ただし、modidが異なれば同じidで登録できます）。
+* `register()` は `FMLLoadCompleteEvent` の前にのみ使用可能です（それ以降はロックされ例外になります）。
+
+---
+
+### ▶ 呼び出し方法（ゲーム実行中も可）
+
+```java
+Optional<MyResult> result = TraitHelper.applyFunction("yourmod:my_trait", MyType.class, instance);
+```
+
+* fullIdでTraitは取得します。fullIdは`modid+registry時のid`です
+* `tryApplyFunction(...)`：TraitFunction を取得して実行。成功すれば `Optional<R>` を返します。
+* `tryApplyTrait(...)`：戻り値が不要なときに使います（true/falseを返却）。
+* `getTrait(...)`：Trait 自体を取得したいときに使います（Optional で返却）。
+* `getFunctionTrait(...)`: TraitFunction自体を取得したいときに使います。
+
+---
+
+### 🚀 高度な使い方
+
+PolyHookLib では、Mixin を用いて **外部クラスに Trait や TraitFunction を注入することも可能**です。
+これにより、**他Modが定義するクラスに対しても「動的な処理の追加」が可能**になります。
+
+#### 🧪 例：他のクラスに `Trait<MyType>` を注入
+
+1. 自Mod内に Mixin を作成し、対象クラスに `Trait<MyType>` を inject
+2. `TraitFunctionRegistry.register(...)` で動作を登録
+3. 実行時に `TraitHelper.applyTrait(...)` で動作を呼び出し
+
+> これはまさに「外部から機能を注入して使う」Mixin本来の力を生かした設計です。
+
+#### ⚠ 注意点
+
+* Mixinが衝突する可能性があるため、慎重に対象クラスを選びましょう。
+* `@Inject` ではなく `@Implements` / `@Unique` を使うことで、干渉を最小限に抑える工夫が可能です。
+* こうした手法は **中上級者向け** です。不適切な設計はクラッシュや競合の原因となります。
+
+---
+
+### 🧾 まとめ
+
+| 項目              | 内容                             |
+| --------------- | ------------------------------ |
+| `IAccess` 系     | `getAsXxx()` で元の型に安全にアクセス      |
+| `AccessHelper`  | `Optional<Xxx>` で null 安全なアクセス |
+| `TraitID`       | `modid:trait_name` 形式で一意に識別    |
+| `TraitFunction` | 任意の関数（ラムダ）を定義し、動作を動的に紐づける      |
+| `applyFunction` | TraitFunction を呼び出して結果を得る      |
+| `applyTrait`    | Trait を呼び出して副作用処理を行う           |
+
+---
+
 
 
 
