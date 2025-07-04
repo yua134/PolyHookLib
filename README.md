@@ -9,22 +9,6 @@ This mod allows developers to **dynamically treat multiple unrelated types in a 
 by injecting shared interfaces into otherwise unrelated classes, and using `instanceof` and casting to interact with them.
 
 
-## 📦 Features
-
-| Target Class                                   | Injected Interface   | Provided Method      |
-| ---------------------------------------------- | -------------------- | -------------------- |
-| `Block`                                        | `IBlockAccess`       | `getAsBlock()`       |
-| `BlockEntity`                                  | `IBlockEntityAccess` | `getAsBlockEntity()` |
-| `Entity`                                       | `IEntityAccess`      | `getAsEntity()`      |
-| `Item`                                         | `IItemAccess`        | `getAsItem()`        |
-| `Level`                                        | `ILevelAccess`       | `getAsLevel()`       |
-| `Player`                                       | `IPlayerAccess`      | `getAsPlayer()`      |
-| *(Note: `ItemStack` is currently unsupported)* | `IItemStackAccess`   | -                    |
-
-> The current version only provides basic `getAsX()` methods.
-> More advanced APIs may be added in future versions.
-
-
 ## 🔧 Usage (For Developers)
 
 ### ✅ Basic Usage: Accessing Types via `IAccess` Interfaces
